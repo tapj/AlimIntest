@@ -1,0 +1,15 @@
+Package: AlimIntest
+Title: AlimIntest project source code
+Version: 0.1
+Authors@R: "Julien Tap <Julien.Tap@jouy.inra.fr> [aut, cre]"
+Description: AlimIntest project dataset and source code
+Depends:
+    R (>= 3.0.2)
+License: GPL-3
+LazyData: true
+Suggests:
+    knitr,
+    ade4,
+    ggplot2,
+    vegan
+VignetteBuilder: knitr
