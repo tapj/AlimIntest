@@ -5,4 +5,5 @@ You can genearate the main analysis from the manuscript installing this reposito
 
     library(devtools)
     install_github("tapj/AlimIntest")
+    browseVignettes("AlimIntest")
 
