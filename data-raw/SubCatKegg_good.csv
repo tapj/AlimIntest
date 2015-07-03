@@ -1,0 +1,31 @@
+GeneFamily;151f_1_10;126f_10_10;96f_11_10;175f_17_10;79f_1_40;100f_10_40;99f_11_40;163f_17_40;Annotations
+1101;148;2866;34;760;372;117;115;162;Carbohydrate Metabolism    
+1102;44;897;12;302;115;40;42;56;Energy Metabolism    
+1103;44;579;12;113;185;23;35;41;Lipid Metabolism    
+1104;30;481;5;166;46;35;16;34;Nucleotide Metabolism    
+1105;68;1067;16;314;235;55;50;79;Amino Acid Metabolism   
+1106;9;112;2;71;11;12;10;5;Metabolism of Other Amino Acids 
+1107;14;185;0;74;27;16;21;21;Glycan Biosynthesis and Metabolism  
+1108;1;26;0;18;3;3;0;6;Biosynthesis of Polyketides and Nonribosomal Peptides
+1109;100;335;23;132;41;71;15;20;Metabolism of Cofactors and Vitamins 
+1110;7;135;0;49;19;7;7;7;Biosynthesis of Secondary Metabolites  
+1111;45;520;10;101;183;17;26;28;Xenobiotics Biodegradation and Metabolism  
+1121;16;157;0;59;15;18;7;9;Transcription     
+1122;55;715;34;331;150;77;96;50;Translation     
+1123;18;210;2;76;20;20;22;14;Folding, Sorting and Degradation  
+1124;24;199;6;97;35;21;15;26;Replication and Repair   
+1131;76;1122;44;577;231;66;49;116;Membrane Transport    
+1132;15;374;9;105;14;15;14;33;Signal Transduction    
+1133;0;0;2;0;0;4;0;1;Signaling Molecules and Interaction  
+1141;9;356;1;84;18;23;5;29;Cell Motility    
+1142;12;170;3;76;41;14;10;27;Cell Growth and Death  
+1143;0;0;1;0;0;4;0;0;Cell Communication    
+1144;7;76;1;62;15;5;10;11;Endocrine System    
+1145;1;10;0;22;0;1;1;0;Immune System    
+1146;0;0;1;0;0;0;0;0;Nervous System    
+1147;2;7;10;2;0;5;0;0;Sensory System    
+1161;1;11;1;23;0;5;1;0;Cancers     
+1162;0;7;0;2;1;0;0;0;Immune Disorders    
+1163;13;322;5;131;19;10;24;13;Neurodegenerative Diseases    
+1164;9;45;3;58;4;6;1;4;Metabolic Disorders    
+1165;3;8;0;4;4;6;1;2;Infectious Diseases    

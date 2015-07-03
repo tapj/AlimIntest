@@ -1,0 +1,15 @@
+base
+reshape2
+ggplot2
+devtools
+AlimIntest
+ade4
+gridExtra
+rmarkdown
+markdown
+RColorBrewer
+knitr
+scales
+lattice
+plyr
+Rmisc

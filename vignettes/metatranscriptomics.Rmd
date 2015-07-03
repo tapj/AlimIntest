@@ -1,0 +1,205 @@
+---
+title: "Metatranscriptomics descriptive analysis"
+author: Julien Tap
+date: ""
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    fig_caption: true
+  pdf_document:
+    toc: true
+    fig_caption: true
+  word_document:
+    toc: true
+    fig_caption: true
+vignette: >
+  %\VignetteIndexEntry{metatranscriptomics_analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r load_library_data}
+
+library(ggplot2)
+library(scales)
+library(ade4)
+library(reshape2)
+library(grid)
+library(knitr)
+data(metatrans_alimintest)
+
+```
+
+
+```{r knit_options, include=FALSE}
+opts_chunk$set(fig.width=12, fig.height=8, warning=FALSE, 
+message=FALSE, echo=FALSE, dev=c('png', 'pdf', 'win.metafile', 'tiff'), 
+fig.cap=NULL, cache=TRUE, dpi=300)
+```
+
+Introduction
+------------
+Four subjects were subjected to 10g of fiber diet per day first then 40g fiber per diet after a washout period of 15 days.
+In addition to 16S rRNA gene sequencing, metatranscriptomics was also done from stool samples. 
+Here we aimed to compare gut microbiota composition, taxonomic and functional activies.
+
+Results
+----------
+
+```{r Fig4_metatrans_kegg, fig.cap="Taxonomic comparison between 16S and metatranscriptomics dataset", fig.height=5, fig.width=9}
+
+m  = melt(apply(metatrans_alimintest$SubCatKegg[1:15,], 1, tapply, c(rep("10g",4),rep("40g",4)), mean))
+se = melt(apply(metatrans_alimintest$SubCatKegg[1:15,], 1, tapply, c(rep("10g",4),rep("40g",4)), function(x){sd(x)/sqrt(length(x))}))
+m  = data.frame(m,sem = se[,3])
+
+dodge <- position_dodge(width=0.9)
+
+p0 = ggplot(m, aes(fill=Var1, x=Var2, y=value)) + 
+geom_bar(colour="black", position=position_dodge(), stat="identity") + 
+geom_errorbar(aes(ymin=value-sem, ymax = value+sem), position=position_dodge(width=0.9), width=0.33) +
+scale_y_continuous(labels = percent) + coord_flip() + 
+scale_fill_manual("Dietary fiber\nper day", values=c("yellow","#7F7F00")) +
+theme_classic() + theme(legend.position = c(0.8, 0.8)) + 
+xlab("") + ylab("average reads proportions assigned") 
+
+p0
+
+pdf("figures/Tap_FigS4_metatrans_kegg.pdf", h=5, w=9)
+p0
+dev.off()
+
+
+```
+**Fig. 4: Impact of diet on microbial gene expression.** 
+The graph pictures the relative abundance of gut microbial cDNA reads assigned to KEGG database subcategories 
+according to diet fiber content. Standard error of the mean are reprensented by error bars. 
+Stars indicate that p. values < 0.05. 
+Yellow bars account for a diet with 10g fiber/day (point 3 on Fig. S1). 
+Green bars account for the 40g fiber/day diet (point 5 on Fig. S1).
+
+__________________________________________
+
+```{r metatrans_16S_tax_compare}
+
+tax_levels = c(
+
+    "Bacteroides",
+    "O_Bacteroidetes",
+    "Bifidobacterium",
+    "O_Actinobacteria",
+    "Clostridiaceae",
+    "Eubacteriaceae",
+    "Lachnospiraceae",
+    "Ruminococcaceae",
+    "O_Firmicutes",
+    "O_Proteobacteria",
+    "O_Bacteria",
+    "Archaea"
+
+) #useful to reorder the taxonomic level for the bar chart plot
+
+
+metatrans = rbind(
+	metatrans_alimintest$tax_metatrans_summary[,c(tax_levels, "method","subject_id", "fiber")],
+	metatrans_alimintest$tax_16S_summary[,c(tax_levels, "method","subject_id", "fiber") ]
+)
+
+metatrans = melt(metatrans, id.vars=c("method","subject_id","fiber"))
+
+```
+
+________________________________________________
+
+```{r metatrans_16S_tax_compare_figure, fig.cap="Taxonomic comparison between 16S and metatranscriptomics dataset", fig.height=7, fig.width=7}
+
+
+taxcolors = c("blue","deepskyblue1","yellow","yellow3", "hotpink","hotpink1","hotpink2","hotpink3",
+"hotpink4", "palegreen", "grey","black")
+ 
+#pdf("~/storage/Dropbox/AlimIntest_reloaded/Article/revised_manuscript/Supplementary/FigS6_metatrans_tax.pdf", h=7, w=7)
+ 
+p1 = ggplot(metatrans) + geom_bar(aes(y=value, x=fiber, fill=variable), stat="identity") + 
+facet_grid(method~subject_id) + scale_x_discrete(label=c("10g","40g")) + 
+scale_fill_manual("Taxonomy",values=taxcolors) + xlab("fiber amount per day") + ylab("proportions")
+
+p1
+
+#dev.off()
+
+```
+
+**Fig. S6 (a): Taxonomic comparison between 16S and metatranscriptomics dataset.** 
+
+________________________________________
+
+A partial triadic analysis (between 10g vs 40g of fiber) combined with a 
+co-inertia analysis (KEGG metatranscriptomics data vs taxonomic metatranscriptomics) is done.
+The aime of this analysis is to test the co-structure between taxonomic and functional activities 
+and explore this under different conditions of fiber amount.
+
+
+```{r statico_analysis}
+
+tax = t(metatrans_alimintest$tax_metatrans_summary[1:12])
+tax.pca  = dudi.pca(as.data.frame(t(log10(tax+0.00001))),scannf=F, nf=3)
+kegg.pca = dudi.pca(as.data.frame(t(log10(metatrans_alimintest$SubCatKegg[1:15,]+0.00001))),scannf=F, nf=3)
+wit1     = wca(tax.pca, metatrans_alimintest$metadata$fiber, scan = FALSE, scal = "total")
+wit2     = wca(kegg.pca, metatrans_alimintest$metadata$fiber, scan = FALSE, nf = 2)
+kta1     = ktab.within(wit1, colnames = metatrans_alimintest$metadata$sample_id2)
+kta2     = ktab.within(wit2, colnames = metatrans_alimintest$metadata$sample_id2)
+statico1 = statico(kta1, kta2, scan = FALSE)
+
+row.names(statico1$co) = gsub("  ", "", gsub("\\.", " ", row.names(statico1$co)))
+
+
+```
+
+````{r metatrans_pta_coia_figure, fig.cap="Taxonomic comparison between 16S and metatranscriptomics dataset", fig.height=7, fig.width=7}
+
+p2 = ggplot(statico1$li) + geom_text(aes(label=row.names(statico1$li), x=Axis1, y=Axis2), size=3) +
+ geom_text(data=statico1$co, aes(x=Comp1, y=Comp2, label=row.names(statico1$co)), col="red", size=3) +
+ xlab(paste0("PC1 ",round((statico1$eig/sum(statico1$eig))[1]*100,1),"%" )) +
+ ylab(paste0("PC2 ",round((statico1$eig/sum(statico1$eig))[2]*100,1),"%" )) + theme_bw() + xlim(-3,3) 
+
+a  = data.frame(cos2=statico1$cos2, fiber=c("10g","40g"))
+p3 = ggplot(a) + geom_bar(aes(y=cos2, x=fiber),stat="identity") + ylab("co-structure\ncontributions")
+
+p3_grob = ggplotGrob(p3)
+
+ 
+p2 = p2 + annotation_custom(grob = p3_grob, xmin = -3, xmax = -1.6, ymin = 0.7, ymax = 1.8)
+p2
+
+pdf("figures/Tap_FigS6_metatrans_16S_kegg_pta_coia.pdf", h=7, w=16)
+grid.arrange(p1, p2, ncol=2)
+dev.off()
+
+```
+
+**Fig. S6 (b): Co-inertia compromise between taxonomic and functional activities in the gut microbiota with 10g or 40 fiber diet**.
+Combined with a partial triadic analysis, the contribution of different fiber amount to the link 
+between taxonomic and function is measured (inset graphic). after 10g of fiber, the link between taxonomic 
+and functional activities is higher than 40g of fiber.
+________________________________________
+
+
+
+
+
+
+Conclusion
+------------
+
+- Microbial composition and activities are linked. 
+Main difference might be due to the metatranscriptomics reads annotation biaised by reference database.
+
+- A coinertia analysis combined with a partial tridiac analysis allowed us to decipher the link 
+between taxonomic and functional activities across diet change. 
+Lachnospiraceae, Eubacteriaceae and other Firmicutes were linked to glycan metabolism and energy metabolism.
+Bacteroides and Proteobacteria were linked translation and metabolism of cofactors and vitamins.
+This link is stronger after 10g of fiber compared to 40g.
+
+
+
+

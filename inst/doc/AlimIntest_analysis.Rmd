@@ -448,6 +448,17 @@ richness_vs_jsd
 
 _____________
 
+**Microbiota variations measured by JSD metrics is not associated with diet change**
+
+```{r jsd_change_test}
+
+pairwise.wilcox.test(data.frame(microbial.change,group)$jsd,group,
+ p.adjust="none", paired=TRUE)
+pairwise.wilcox.test(data.frame(microbial.change,group)$jsd,data.frame(microbial.change,group)$change,
+ p.adjust="none", paired=TRUE)
+
+```
+
 
 
 
@@ -495,14 +506,14 @@ res
 
 ________________________
 
+**Associations between Microbial change and richness before diet and comet assays after diet**. 
+Associations were assessed by Spearman rho correlation and p.value were indicated in parenthesis.
+
 ```{r cor_test_change_kable, results="asis", comment=NA, echo=FALSE}
 
 kable(format(res))
 
 ```
-
-**Associations between Microbial change and richness before diet and comet assays after diet**. 
-Associations were assessed by Spearman rho correlation and p.value were indicated in parenthesis.
 
 ___________________
 
@@ -510,6 +521,20 @@ ___________________
 
 Gut microbiota richness and SCFA
 -------------------------
+
+
+**Spearman rho correlation between microbiota richness, bacterial genera proportions and SCFAs**
+
+```{r SCFA_genera_richness_spearman_cor}
+
+cor(metadata76$richness[-c(50,70)], metadata76[-c(50,70),7:14], method="spearman")
+
+cor(metadata76$richness,as.data.frame(t(log10((microbiota_tax$genus_tax[-1,]) + 10^-5))), method="spearman")
+
+```
+
+Using univariate statistics, correlation are quite low and non significant.
+Coinertia analysis allow us to to test the multivariate associations between SCFAs profile and microbiota genera.
 
 
 ```{r comet_richness_PC1}
@@ -528,13 +553,48 @@ dd=data.frame(genus.scfa.coi$lX, metadata76[-c(50,70),], as.data.frame(t(log10(n
 
 SCFA and microbiota composition at genus levels shared a co-structured inertia (RV = `r paste(round(test$obs*100,2), " %")`, p = `r round(test$pvalue,3)`) supported by a significant Monte Carlo test.
 
+
+________________
+
+```{r richness_vs_SCFA_genus_global, fig.cap="global association between OTU richness, SCFA and bacterial genera using co-inertia analysis", fig.height=9, fig.width=12}
+
+scfa.richness.cor = data.frame(genus.scfa.coi$co[1:2], richness.cor=t(cor(metadata76$richness[-c(50,70)], metadata76[-c(50,70),7:14], method="spearman")))
+
+genus.richness.cor = data.frame(genus.scfa.coi$li[-1,1:2],
+
+richness.cor=cor(metadata76$richness,as.data.frame(t(log10((microbiota_tax$genus_tax[-1,]) + 10^-5))), method="spearman")[,row.names(genus.scfa.coi$li[-1,1:2])])
+
+colnames(genus.richness.cor) = colnames(scfa.richness.cor)
+
+genus.scfa.richness.cor = rbind(scfa.richness.cor, genus.richness.cor)
+
+p3 = ggplot(genus.scfa.richness.cor) + geom_text(aes(x=Comp1, y=Comp2, label=row.names(genus.scfa.richness.cor), col=richness.cor)) + xlab("PC1 loadings") + ylab("PC2 loadings")
+
+p3 + scale_colour_gradient("Spearman correlation\nwith microbiota richness", limits=c(-0.6, 0.6), low="red", high="green", space="Lab")
+
+```
+
+**Fig. S7: Global association between microbial OTU richness, SCFA and bacterial genera using co-inertia analysis.** 
+The two first principal component loading from the co-inertia analysis between SCFA and 
+microbial genera are plotted. Color gradient account for spearman correlation 
+strengh between SCFA and bacterial genera with microbial OTU richness.
+
+__________________
+
+From the co-inertia analysis, we observed that i) SCFAs profile are significantly associated
+with bacteria genera proportions ii) and this associations is correlated with bacterial richness.
+For example, caproate, valerate, _Prevotella_, _Coprococcus_ are positively associated with richness while
+butyrate, propionate, acetate and _Bacteroides_ are negatively associated with richness. 
+We choose those observations to build the main figure below. 
+The first component of the co-inertia analysis (PC1) represent well those associations.
+
 _____________
 
-```{r richness_vs_SCFA_genus, fig.cap="association between OTU richness, SCFA and bacterial genera", fig.height=4, fig.width=13}
+```{r richness_vs_SCFA_genus, fig.cap="selected association between OTU richness, SCFA and bacterial genera", fig.height=4, fig.width=13}
 
 p1 = ggplot(dd, aes(x = AxcX1, y = richness)) +
      geom_point(aes(size = richness, colour = caproate+valerate), alpha = 0.8) +
-     scale_colour_gradient("Caproate and\nValerate",low = "blue", high = "red", space = "Lab") +
+     scale_colour_gradient("Caproate and\nValerate (mM)",low = "blue", high = "red", space = "Lab") +
      xlab("PC1") + ylab("Microbial richness") #+ xlim( -4,3) 
 	 
 p2 = ggplot(dd, aes(x = AxcX1, y = richness)) +

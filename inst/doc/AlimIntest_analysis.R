@@ -273,6 +273,14 @@ richness_vs_jsd = ggplot(data.frame(microbial.change,group), aes(x=log10(jsd), y
 richness_vs_jsd
 
 
+## ----jsd_change_test-----------------------------------------------------
+
+pairwise.wilcox.test(data.frame(microbial.change,group)$jsd,group,
+ p.adjust="none", paired=TRUE)
+pairwise.wilcox.test(data.frame(microbial.change,group)$jsd,data.frame(microbial.change,group)$change,
+ p.adjust="none", paired=TRUE)
+
+
 ## ----comet_vs_jsd, fig.cap="Microbial change vs comet assays", fig.height=4, fig.width=14, fig.show="hide"----
 ggplot(data.frame(microbial.change,group), aes(x=log10(jsd), y=comet.after)) +
   geom_point(aes(colour=diet), cex=4) + stat_smooth(method = "lm") +
@@ -317,6 +325,13 @@ res
 kable(format(res))
 
 
+## ----SCFA_genera_richness_spearman_cor-----------------------------------
+
+cor(metadata76$richness[-c(50,70)], metadata76[-c(50,70),7:14], method="spearman")
+
+cor(metadata76$richness,as.data.frame(t(log10((microbiota_tax$genus_tax[-1,]) + 10^-5))), method="spearman")
+
+
 ## ----comet_richness_PC1--------------------------------------------------
 genus.scfa.coi = coinertia(
 		         dudi.pca(na.omit(metadata76[7:14]), scannf=F, nf=7), 
@@ -330,11 +345,28 @@ test=randtest(genus.scfa.coi,9999)
 dd=data.frame(genus.scfa.coi$lX, metadata76[-c(50,70),], as.data.frame(t(log10(noise.removal(microbiota_tax$genus_tax, percent=1)[,-attr(na.omit(metadata76[7:14]),"na.action")] + 10^-5))))
 
 
-## ----richness_vs_SCFA_genus, fig.cap="association between OTU richness, SCFA and bacterial genera", fig.height=4, fig.width=13----
+## ----richness_vs_SCFA_genus_global, fig.cap="global association between OTU richness, SCFA and bacterial genera using co-inertia analysis", fig.height=9, fig.width=12----
+
+scfa.richness.cor = data.frame(genus.scfa.coi$co[1:2], richness.cor=t(cor(metadata76$richness[-c(50,70)], metadata76[-c(50,70),7:14], method="spearman")))
+
+genus.richness.cor = data.frame(genus.scfa.coi$li[-1,1:2],
+
+richness.cor=cor(metadata76$richness,as.data.frame(t(log10((microbiota_tax$genus_tax[-1,]) + 10^-5))), method="spearman")[,row.names(genus.scfa.coi$li[-1,1:2])])
+
+colnames(genus.richness.cor) = colnames(scfa.richness.cor)
+
+genus.scfa.richness.cor = rbind(scfa.richness.cor, genus.richness.cor)
+
+p3 = ggplot(genus.scfa.richness.cor) + geom_text(aes(x=Comp1, y=Comp2, label=row.names(genus.scfa.richness.cor), col=richness.cor)) + xlab("PC1 loadings") + ylab("PC2 loadings")
+
+p3 + scale_colour_gradient("Spearman correlation\nwith microbiota richness", limits=c(-0.6, 0.6), low="red", high="green", space="Lab")
+
+
+## ----richness_vs_SCFA_genus, fig.cap="selected association between OTU richness, SCFA and bacterial genera", fig.height=4, fig.width=13----
 
 p1 = ggplot(dd, aes(x = AxcX1, y = richness)) +
      geom_point(aes(size = richness, colour = caproate+valerate), alpha = 0.8) +
-     scale_colour_gradient("Caproate and\nValerate",low = "blue", high = "red", space = "Lab") +
+     scale_colour_gradient("Caproate and\nValerate (mM)",low = "blue", high = "red", space = "Lab") +
      xlab("PC1") + ylab("Microbial richness") #+ xlim( -4,3) 
 	 
 p2 = ggplot(dd, aes(x = AxcX1, y = richness)) +

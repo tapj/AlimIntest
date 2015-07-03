@@ -78,6 +78,27 @@ NULL
 #' head(replicat_454)
 NULL
 
+#' Metatranscriptomics AlimIntest data
+#'
+#' This dataset contains Metatranscriptomics data from the 
+#' AlimIntest project.
+#'
+#'
+#' @section Variables:
+#'
+#' \itemize{
+#' \item \code{tax_metatrans_summary}: taxonomic table from metatranscriptomics sequencing
+#' \item \code{tax_16S_summary}: taxonomic table from 16S rRNA genes reads
+#' \item \code{SubCatKegg}: KEGG categories from metatranscriptomics sequencing
+#' \item \code{metadata}: minimal set of metadata for each sample analysed by metatranscriptomics
+#' }
+#' @docType data
+#' @name metatrans_alimintest
+#' @usage metatrans_alimintest
+#' @format A list of 4 data frames
+#' @examples
+#' head(metatrans_alimintest$metadata)
+NULL
 
 
 #' calculate delta for a variable

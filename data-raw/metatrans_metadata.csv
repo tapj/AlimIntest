@@ -1,0 +1,9 @@
+sample_id;sample_id2;time_point;subject_id;diet_run;fiber
+151;1J5;3;1;r10-40;after 10g fiber per day
+126;10J5;3;10;r10-40;after 10g fiber per day
+96;11J5;3;11;r10-40;after 10g fiber per day
+175;17J5;3;17;r10-40;after 10g fiber per day
+79;1J25;5;1;r10-40;after 40g fiber per day
+100;10J26;5;10;r10-40;after 40g fiber per day
+99;11J26;5;11;r10-40;after 40g fiber per day
+163;17J25;5;17;r10-40;after 40g fiber per day
