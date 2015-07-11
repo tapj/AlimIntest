@@ -65,9 +65,9 @@ xlab("") + ylab("average reads proportions assigned")
 
 p0
 
-# pdf("figures/Tap_FigS4_metatrans_kegg.pdf", h=5, w=9)
-# p0
-# dev.off()
+pdf("figures/Tap_FigS4_metatrans_kegg.pdf", h=5, w=9)
+p0
+dev.off()
 
 
 ```

@@ -12,7 +12,7 @@
 #'    \item idx:	INDEX
 #'    \item Sample_ID; Sample_ID2:	Sample identifications
 #'    \item Time point:	Time point corresponding to study design illustrated on Fig. S1
-#'    \item Subject_Id:	Subject idenfication
+#'    \item Subject_Id:	Subject identification
 #'    \item Diet_run:	Diet run "r10_40" correspond to 10g fiber per day between time point n°2 and time point n°3 and 40g fiber per day between time point n°4 and time point n°5; "r40_10" correspond to the cross over to "r10_40". See Fig. S1
 #'    \item Seq_filtered:	Sequence after quality checking from LOTUS pipeline
 #'    \item acetate; propionate; isobutyrate; butyrate; isovalerate; valerate; isocaproate; caproate:	Short Chain Fatty Acid measurement  (mM) by gas-liquid chromatography
@@ -22,7 +22,7 @@
 #'			}
 #' \item \code{otu}: Microbial OTU table
 #' \item \code{tax}: OTU Greengenes taxonomy
-#' \item \code{basalqpcr}: extra qpcr data which correpond to time point 1 and time point 6 (see Fig. S1)
+#' \item \code{basalqpcr}: extra qpcr data which correspond to time point 1 and time point 6 (see Fig. S1)
 #' }
 #' @docType data
 #' @name alimintestData
@@ -98,6 +98,28 @@ NULL
 #' @format A list of 4 data frames
 #' @examples
 #' head(metatrans_alimintest$metadata)
+NULL
+
+#' Basal diet AlimIntest data
+#'
+#' This dataset contains basal diet from individual before and after 
+#' inclusion into the AlimIntest study
+#'
+#'
+#' @section Variables:
+#'
+#' \itemize{
+#' \item \code{subject}: Subject identification
+#' \item \code{visit}: before or after nutritional intervention
+#' \item \code{day}: nb of days before or after nutritional intervention
+#' \item \code{food}: 124 food items, "1" means food item included into diet by the subject
+#' }
+#' @docType data
+#' @name basal_diet
+#' @usage basal_diet
+#' @format a data frame with 114 rows and 127 columns
+#' @examples
+#' head(basal_diet)
 NULL
 
 
